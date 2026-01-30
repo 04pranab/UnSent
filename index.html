@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UnSent: A personal archive of thoughts never shared">
+    <title>UnSent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header" id="headerUI">
+            <h1 class="site-title">✉️ UnSent</h1>
+            <p class="site-subtitle">thoughts never shared</p>
+        </header>
+
+        <!-- About Section -->
+        <section class="about-section" id="aboutSection">
+            <div class="about-content">
+                <h2 class="about-title">About</h2>
+                <p class="about-author">Om Pranab Mohanty</p>
+                <div class="about-text">
+                    <p>I do not write by habit, only by necessity. Most of what appears here arrives without warning and leaves before it can be shaped.</p>
+                    <p>These pieces were not meant to be finished, revised, or explained. Some were written in margins, some behind other thoughts, some before I understood what they were asking for.</p>
+                    <p>What lives here is unfiltered, unpolished, and unashamed. These are the thoughts that refused to stay quiet.</p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="nav-controls" id="navUI">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search..."
+                    aria-label="Search writings"
+                >
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+
+            <div class="category-buttons">
+                <button class="category-btn active" data-category="all" aria-pressed="true">
+                    All
+                </button>
+                <button class="category-btn" data-category="prose" aria-pressed="false">
+                    Prose
+                </button>
+                <button class="category-btn" data-category="poem" aria-pressed="false">
+                    Poem
+                </button>
+            </div>
+        </nav>
+
+        <!-- Entry Detail Overlay -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close">×</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Entry content dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+
+        <!-- Draft Mode Content -->
+        <div class="draft-mode-container" id="draftModeContainer" style="display: none;">
+            <div class="draft-header">
+                <button class="exit-draft-btn" id="exitDraftBtn">← Return</button>
+            </div>
+            <div class="drafts-content">
+                <div class="draft-editor">
+                    <textarea id="draftText" class="draft-input" placeholder="Write something you might never send..."></textarea>
+                    <div class="draft-controls">
+                        <button id="saveDraftBtn" class="save-draft-btn">💾 Save Draft</button>
+                        <button id="clearDraftBtn" class="clear-draft-btn">🗑️ Clear</button>
+                    </div>
+                </div>
+                <div class="saved-drafts" id="savedDrafts"></div>
+            </div>
+        </div>
+
+        <!-- Left Unsent Page -->
+        <div class="left-unsent-container" id="leftUnsentContainer" style="display: none;">
+            <div class="left-unsent-header">
+                <button class="exit-left-unsent-btn" id="exitLeftUnsentBtn">← Return</button>
+            </div>
+            <div class="left-unsent-content" id="leftUnsentContent"></div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="entries-grid" id="entriesContainer">
+                <div class="loading-state">Loading writings...</div>
+            </div>
+        </main>
+
+        <footer class="footer" id="footerUI">
+            <p>&copy; 2024. All writing is personal.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

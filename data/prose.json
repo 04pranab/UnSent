@@ -1,0 +1,90 @@
+[
+  {
+    "id": "prose-001",
+    "title": "On the Art of Stillness",
+    "date": "2024-01-15",
+    "excerpt": "There is a particular silence that exists between thoughts, a space where the mind rests before language arrives to describe it.",
+    "tags": ["meditation", "philosophy", "time"],
+    "pinned": true,
+    "featured": false,
+    "unsent": false,
+    "order": 1
+  },
+  {
+    "id": "prose-002",
+    "title": "Letters Never Sent",
+    "date": "2024-01-10",
+    "excerpt": "We write countless letters in our minds—words shaped by longing, shaped by distance, shaped by the knowledge that some things are better left unsaid.",
+    "tags": ["reflection", "memory", "connection"],
+    "pinned": false,
+    "featured": true,
+    "unsent": true,
+    "order": 2
+  },
+  {
+    "id": "prose-003",
+    "title": "The Texture of Ordinary Days",
+    "date": "2024-01-08",
+    "excerpt": "Beauty often hides in the mundane—in the way light falls across a room in the afternoon, in the rhythm of repetition, in the quiet persistence of small rituals.",
+    "tags": ["observation", "beauty", "daily"],
+    "pinned": false,
+    "featured": true,
+    "unsent": false,
+    "order": 3
+  },
+  {
+    "id": "prose-004",
+    "title": "Conversations with Absence",
+    "date": "2023-12-28",
+    "excerpt": "Sometimes we speak most honestly to those no longer here. The words flow without the weight of judgment, without the need for response.",
+    "tags": ["loss", "grief", "solitude"],
+    "pinned": false,
+    "featured": false,
+    "unsent": true,
+    "order": null
+  },
+  {
+    "id": "prose-005",
+    "title": "Reading Between Silence",
+    "date": "2023-12-15",
+    "excerpt": "A book is not just words on a page. It is a conversation across time, a reaching across the gap between minds, an act of profound intimacy.",
+    "tags": ["reading", "literature", "connection"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "prose-006",
+    "title": "Where Thoughts Begin",
+    "date": "2023-12-01",
+    "excerpt": "An idea doesn't arrive fully formed. It begins as a whisper, a half-glimpsed thing, something felt before it can be understood.",
+    "tags": ["creativity", "process", "philosophy"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "prose-007",
+    "title": "The Language of Light",
+    "date": "2023-11-18",
+    "excerpt": "If we learned to read light as carefully as we read words, we would understand so much more about the world and ourselves.",
+    "tags": ["observation", "nature", "perception"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "prose-008",
+    "title": "Collected Moments",
+    "date": "2023-11-05",
+    "excerpt": "Life is made of moments—most small, some luminous, all fleeting. We collect them like shells on a beach, trying to preserve something indefinable.",
+    "tags": ["time", "memory", "impermanence"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  }
+]

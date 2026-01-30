@@ -1,0 +1,90 @@
+[
+  {
+    "id": "poem-001",
+    "title": "In the Quiet Hours",
+    "date": "2024-01-12",
+    "excerpt": "What lives in the space between heartbeats,\nin the breath before speech,\nin the pause that holds all possibility?\n\nTime stops here.\nOr perhaps it never started.",
+    "tags": ["silence", "contemplation", "time"],
+    "pinned": true,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "poem-002",
+    "title": "Ordinary Geometry",
+    "date": "2024-01-05",
+    "excerpt": "The angle of winter light.\nThe slope of a leaf.\nThe curve of hands holding something precious.\n\nAll geometry is love.",
+    "tags": ["nature", "love", "form"],
+    "pinned": false,
+    "featured": true,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "poem-003",
+    "title": "The Weight of Words",
+    "date": "2023-12-20",
+    "excerpt": "Some words are too heavy to carry.\nWe set them down gently,\nhopping someone will find them\nand understand.",
+    "tags": ["language", "meaning", "expression"],
+    "pinned": false,
+    "featured": false,
+    "unsent": true,
+    "order": null
+  },
+  {
+    "id": "poem-004",
+    "title": "Before Morning",
+    "date": "2023-12-10",
+    "excerpt": "In that hour\nwhen sleep releases its grip\nbut waking hasn't fully claimed us,\nwe exist in a third space—\nneither here nor there.",
+    "tags": ["time", "transition", "consciousness"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "poem-005",
+    "title": "Untitled Fragment",
+    "date": "2023-11-28",
+    "excerpt": "The unfinished thought is sometimes more beautiful than the complete sentence. It leaves room for your own silence.",
+    "tags": ["incompleteness", "poetry", "meaning"],
+    "pinned": false,
+    "featured": false,
+    "unsent": true,
+    "order": null
+  },
+  {
+    "id": "poem-006",
+    "title": "Slow Accumulation",
+    "date": "2023-11-12",
+    "excerpt": "Like snow gathering on a branch, like dust on a shelf, like time itself—beauty often arrives imperceptibly, then all at once is there.",
+    "tags": ["beauty", "time", "accumulation"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "poem-007",
+    "title": "The Space Between",
+    "date": "2023-10-30",
+    "excerpt": "Between the question and the answer lives the whole truth of us—uncertain, searching, reaching toward understanding.",
+    "tags": ["uncertainty", "inquiry", "truth"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  },
+  {
+    "id": "poem-008",
+    "title": "Night Thoughts",
+    "date": "2023-10-15",
+    "excerpt": "In darkness we are honest with ourselves in ways daylight doesn't permit. The night asks better questions.",
+    "tags": ["night", "introspection", "honesty"],
+    "pinned": false,
+    "featured": false,
+    "unsent": false,
+    "order": null
+  }
+]
