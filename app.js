@@ -1,504 +1,265 @@
-/**
- * UnSent - Personal Writing Archive
- * Card-based with Modal Overlay
- * Pure vanilla JavaScript - no dependencies
- */
+'use strict';
 
-class UnSent {
-    constructor() {
-        this.allEntries = [];
-        this.filteredEntries = [];
-        this.currentCategory = 'all';
-        this.searchQuery = '';
-        this.readingMode = false;
-        this.draftMode = false;
-        this.leftUnsentMode = false;
-        this.readingModePreference = localStorage.getItem('unsent-reading-mode') === 'true';
-        this.drafts = JSON.parse(localStorage.getItem('unsent-drafts')) || [];
-        
-        this.init();
-    }
+/* ─── UTILS ──────────────────────────────────────── */
 
-    /**
-     * Initialize the application
-     */
-    async init() {
-        try {
-            await this.loadData();
-            this.setupEventListeners();
-            this.render();
-            this.loadDrafts();
-        } catch (error) {
-            console.error('Failed to initialize UnSent:', error);
-            this.showError('Failed to load archive. Please refresh the page.');
-        }
-    }
-
-    /**
-     * Load data from JSON files
-     */
-    async loadData() {
-        try {
-            const [proseResponse, poemResponse] = await Promise.all([
-                fetch('data/prose.json'),
-                fetch('data/poems.json')
-            ]);
-
-            if (!proseResponse.ok || !poemResponse.ok) {
-                throw new Error('Failed to load data files');
-            }
-
-            const proseData = await proseResponse.json();
-            const poemData = await poemResponse.json();
-
-            // Add category to each entry
-            this.allEntries = [
-                ...proseData.map(entry => ({ ...entry, category: 'prose' })),
-                ...poemData.map(entry => ({ ...entry, category: 'poem' }))
-            ];
-
-            // Sort by pinned, featured, then by date
-            this.allEntries.sort((a, b) => {
-                if (a.pinned !== b.pinned) return b.pinned - a.pinned;
-                if (a.featured !== b.featured) return b.featured - a.featured;
-                return new Date(b.date) - new Date(a.date);
-            });
-
-            this.filteredEntries = [...this.allEntries];
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Setup event listeners
-     */
-    setupEventListeners() {
-        // Category buttons
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.handleCategoryChange(e));
-        });
-
-        // Search input
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            this.handleSearch(e.target.value);
-        });
-
-        // Modal controls
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) this.closeModal();
-        });
-        document.getElementById('modalCloseBtn').addEventListener('click', () => this.closeModal());
-
-        // Header buttons
-        document.getElementById('readingModeBtn').addEventListener('click', () => this.toggleReadingMode());
-        document.getElementById('draftModeBtn').addEventListener('click', () => this.toggleDraftMode());
-        document.getElementById('leftUnsentBtn').addEventListener('click', () => this.toggleLeftUnsent());
-
-        // Draft mode controls
-        document.getElementById('saveDraftBtn').addEventListener('click', () => this.saveDraft());
-        document.getElementById('clearDraftBtn').addEventListener('click', () => this.clearDraftInput());
-        document.getElementById('exitDraftBtn').addEventListener('click', () => this.toggleDraftMode());
-        document.getElementById('exitLeftUnsentBtn').addEventListener('click', () => this.toggleLeftUnsent());
-
-        // Keyboard shortcut to close modal
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('active')) {
-                this.closeModal();
-            }
-        });
-    }
-
-    /**
-     * Handle category change
-     */
-    handleCategoryChange(e) {
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.classList.remove('active');
-            btn.setAttribute('aria-pressed', 'false');
-        });
-        
-        e.target.classList.add('active');
-        e.target.setAttribute('aria-pressed', 'true');
-        
-        this.currentCategory = e.target.dataset.category;
-        this.applyFilters();
-    }
-
-    /**
-     * Handle search
-     */
-    handleSearch(query) {
-        this.searchQuery = query.toLowerCase();
-        this.applyFilters();
-    }
-
-    /**
-     * Apply filters
-     */
-    applyFilters() {
-        this.filteredEntries = this.allEntries.filter(entry => {
-            // Category filter
-            if (this.currentCategory !== 'all' && entry.category !== this.currentCategory) {
-                return false;
-            }
-
-            // Search filter
-            if (this.searchQuery) {
-                const matchesTitle = entry.title.toLowerCase().includes(this.searchQuery);
-                const matchesExcerpt = entry.excerpt.toLowerCase().includes(this.searchQuery);
-                const matchesTags = entry.tags.some(tag => tag.toLowerCase().includes(this.searchQuery));
-                
-                if (!matchesTitle && !matchesExcerpt && !matchesTags) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        this.render();
-    }
-
-    /**
-     * Render entries as cards
-     */
-    render() {
-        const container = document.getElementById('entriesContainer');
-        
-        // Clear existing content
-        container.innerHTML = '';
-        
-        // Render each entry as a card
-        container.innerHTML = this.filteredEntries.map(entry => {
-            const statusIndicators = this.getStatusIndicators(entry);
-            const categoryClass = entry.category === 'poem' ? 'poem' : 'prose';
-            const unsentClass = entry.unsent ? 'unsent' : '';
-            return `
-                <div class="entry-item ${categoryClass} ${unsentClass}" data-entry-id="${entry.id}">
-                    <div class="entry-header">
-                        <div class="entry-title-group">
-                            <h3 class="entry-title">${this.escapeHtml(entry.title)}</h3>
-                        </div>
-                        <div class="entry-status-indicators">
-                            ${statusIndicators}
-                        </div>
-                    </div>
-                    
-                    <div class="entry-meta">
-                        <span class="entry-date">${this.formatDate(entry.date)}</span>
-                        <span class="entry-category">${entry.category}</span>
-                    </div>
-                    
-                    <p class="entry-excerpt">${this.escapeHtml(entry.excerpt)}</p>
-                </div>
-            `;
-        }).join('');
-
-        // Add click listeners to cards
-        container.querySelectorAll('.entry-item').forEach(card => {
-            card.addEventListener('click', () => {
-                const entryId = card.dataset.entryId;
-                const entry = this.allEntries.find(e => e.id === entryId);
-                this.openModal(entry);
-            });
-        });
-    }
-
-    /**
-     * Get status indicators (pinned, featured, unsent)
-     */
-    getStatusIndicators(entry) {
-        let html = '';
-        
-        if (entry.pinned) {
-            html += '<span class="status-badge pinned" title="Pinned">📌</span>';
-        }
-        
-        if (entry.featured) {
-            html += '<span class="status-badge featured" title="Featured">⭐</span>';
-        }
-        
-        if (entry.unsent) {
-            html += '<span class="status-badge unsent" title="Unsent"><span class="unsent-dot"></span></span>';
-        }
-        
-        return html;
-    }
-
-    /**
-     * Open modal with entry details
-     */
-    openModal(entry) {
-        const modal = document.getElementById('modalOverlay');
-        const modalBody = document.getElementById('modalBody');
-        
-        const statusIndicators = this.getStatusIndicators(entry);
-        const tagsHtml = entry.tags && entry.tags.length > 0 
-            ? `
-                <div class="modal-entry-tags">
-                    <span class="modal-tags-title">Tags</span>
-                    <div class="modal-tags-list">
-                        ${entry.tags.map(tag => `<span class="modal-tag">${this.escapeHtml(tag)}</span>`).join('')}
-                    </div>
-                </div>
-            ` 
-            : '';
-        
-        const categoryClass = entry.category === 'poem' ? 'poem' : 'prose';
-        const contentHtml = this.escapeHtml(entry.excerpt)
-            .split('\n\n')
-            .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
-            .join('');
-        
-        modalBody.innerHTML = `
-            <div class="modal-entry ${categoryClass}">
-                <h2 class="modal-entry-title">${this.escapeHtml(entry.title)}</h2>
-                
-                <div class="modal-entry-meta">
-                    <span class="modal-entry-date">${this.formatDate(entry.date)}</span>
-                    <span class="modal-entry-category">${entry.category}</span>
-                    <div class="modal-entry-status">
-                        ${statusIndicators}
-                    </div>
-                </div>
-                
-                <div class="modal-entry-content">
-                    ${contentHtml}
-                </div>
-                
-                ${tagsHtml}
-            </div>
-        `;
-        
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    /**
-     * Close modal
-     */
-    closeModal() {
-        const modal = document.getElementById('modalOverlay');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    /**
-     * Toggle reading mode
-     */
-    toggleReadingMode() {
-        this.readingMode = !this.readingMode;
-        const btn = document.getElementById('readingModeBtn');
-        
-        if (this.readingMode) {
-            btn.classList.add('active');
-            document.body.classList.add('reading-mode');
-            localStorage.setItem('unsent-reading-mode', 'true');
-        } else {
-            btn.classList.remove('active');
-            document.body.classList.remove('reading-mode');
-            localStorage.setItem('unsent-reading-mode', 'false');
-        }
-    }
-
-    /**
-     * Toggle draft mode
-     */
-    toggleDraftMode() {
-        this.draftMode = !this.draftMode;
-        const draftContainer = document.getElementById('draftModeContainer');
-        const mainContent = document.getElementById('mainContent');
-        const headerUI = document.getElementById('headerUI');
-        const navUI = document.getElementById('navUI');
-        const footerUI = document.getElementById('footerUI');
-        
-        if (this.draftMode) {
-            mainContent.style.display = 'none';
-            headerUI.style.display = 'none';
-            navUI.style.display = 'none';
-            footerUI.style.display = 'none';
-            draftContainer.style.display = 'block';
-            document.getElementById('draftModeBtn').classList.add('active');
-            document.getElementById('draftText').focus();
-        } else {
-            mainContent.style.display = 'block';
-            headerUI.style.display = 'block';
-            navUI.style.display = 'block';
-            footerUI.style.display = 'block';
-            draftContainer.style.display = 'none';
-            document.getElementById('draftModeBtn').classList.remove('active');
-        }
-    }
-
-    /**
-     * Toggle left unsent page
-     */
-    toggleLeftUnsent() {
-        this.leftUnsentMode = !this.leftUnsentMode;
-        const leftUnsentContainer = document.getElementById('leftUnsentContainer');
-        const mainContent = document.getElementById('mainContent');
-        const headerUI = document.getElementById('headerUI');
-        const navUI = document.getElementById('navUI');
-        const footerUI = document.getElementById('footerUI');
-        
-        if (this.leftUnsentMode) {
-            mainContent.style.display = 'none';
-            headerUI.style.display = 'none';
-            navUI.style.display = 'none';
-            footerUI.style.display = 'none';
-            leftUnsentContainer.style.display = 'block';
-            this.renderLeftUnsent();
-            document.getElementById('leftUnsentBtn').classList.add('active');
-        } else {
-            mainContent.style.display = 'block';
-            headerUI.style.display = 'block';
-            navUI.style.display = 'block';
-            footerUI.style.display = 'block';
-            leftUnsentContainer.style.display = 'none';
-            document.getElementById('leftUnsentBtn').classList.remove('active');
-        }
-    }
-
-    /**
-     * Render Left Unsent page (titles only)
-     */
-    renderLeftUnsent() {
-        const leftUnsentContent = document.getElementById('leftUnsentContent');
-        const unsentEntries = this.allEntries.filter(entry => entry.unsent);
-        
-        if (unsentEntries.length === 0) {
-            leftUnsentContent.innerHTML = '<div class="empty-state">No unsent entries.</div>';
-            return;
-        }
-        
-        leftUnsentContent.innerHTML = unsentEntries.map(entry => `
-            <div class="left-unsent-item" data-entry-id="${entry.id}">
-                <h3 class="left-unsent-title">${this.escapeHtml(entry.title)}</h3>
-            </div>
-        `).join('');
-
-        // Add click listeners
-        leftUnsentContent.querySelectorAll('.left-unsent-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const entryId = item.dataset.entryId;
-                const entry = this.allEntries.find(e => e.id === entryId);
-                this.openModal(entry);
-            });
-        });
-    }
-
-    /**
-     * Save draft
-     */
-    saveDraft() {
-        const text = document.getElementById('draftText').value.trim();
-        
-        if (!text) {
-            alert('Please write something before saving.');
-            return;
-        }
-        
-        const draft = {
-            id: Date.now().toString(),
-            content: text,
-            date: new Date().toISOString()
-        };
-        
-        this.drafts.push(draft);
-        localStorage.setItem('unsent-drafts', JSON.stringify(this.drafts));
-        
-        document.getElementById('draftText').value = '';
-        this.loadDrafts();
-    }
-
-    /**
-     * Load and display drafts
-     */
-    loadDrafts() {
-        const savedDrafts = document.getElementById('savedDrafts');
-        
-        if (this.drafts.length === 0) {
-            savedDrafts.innerHTML = '<div class="empty-state">No saved drafts yet.</div>';
-            return;
-        }
-        
-        savedDrafts.innerHTML = this.drafts.map(draft => {
-            const preview = draft.content.substring(0, 50) + (draft.content.length > 50 ? '...' : '');
-            const date = new Date(draft.date).toLocaleDateString();
-            
-            return `
-                <div class="saved-draft-item">
-                    <div class="draft-item-info">
-                        <div class="draft-item-title">${this.escapeHtml(preview)}</div>
-                        <div class="draft-item-date">${date}</div>
-                    </div>
-                    <div class="draft-item-actions">
-                        <button class="draft-item-btn" data-draft-id="${draft.id}" data-action="restore">Restore</button>
-                        <button class="draft-item-btn" data-draft-id="${draft.id}" data-action="delete">Delete</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Add event listeners to draft buttons
-        savedDrafts.querySelectorAll('.draft-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const draftId = btn.dataset.draftId;
-                const action = btn.dataset.action;
-                
-                if (action === 'restore') {
-                    const draft = this.drafts.find(d => d.id === draftId);
-                    if (draft) document.getElementById('draftText').value = draft.content;
-                } else if (action === 'delete') {
-                    this.drafts = this.drafts.filter(d => d.id !== draftId);
-                    localStorage.setItem('unsent-drafts', JSON.stringify(this.drafts));
-                    this.loadDrafts();
-                }
-            });
-        });
-    }
-
-    /**
-     * Clear draft input
-     */
-    clearDraftInput() {
-        if (confirm('Clear the current draft?')) {
-            document.getElementById('draftText').value = '';
-        }
-    }
-
-    /**
-     * Format date
-     */
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
-    }
-
-    /**
-     * Escape HTML
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    /**
-     * Show error message
-     */
-    showError(message) {
-        const container = document.getElementById('entriesContainer');
-        container.innerHTML = `<div class="empty-state">${message}</div>`;
-    }
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
-// Initialize the app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new UnSent();
-});
+function formatDate(iso) {
+  const d = new Date(iso);
+  // Short format: Jan '24
+  return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+           .replace(' ', " '");
+}
+
+function fullDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+/* ─── STATE ──────────────────────────────────────── */
+
+const state = {
+  all:      [],
+  filtered: [],
+  category: 'all',
+  query:    '',
+};
+
+/* ─── DATA ───────────────────────────────────────── */
+
+async function loadData() {
+  const [pr, po] = await Promise.all([
+    fetch('data/prose.json'),
+    fetch('data/poems.json'),
+  ]);
+  if (!pr.ok) throw new Error(`prose.json ${pr.status}`);
+  if (!po.ok) throw new Error(`poems.json ${po.status}`);
+
+  const [proseRaw, poemsRaw] = await Promise.all([pr.json(), po.json()]);
+
+  // Guard: handle accidental double-wrapping [[{...}]] => [{...}]
+  const prose = Array.isArray(proseRaw[0]) ? proseRaw.flat(1) : proseRaw;
+  const poems = Array.isArray(poemsRaw[0]) ? poemsRaw.flat(1) : poemsRaw;
+
+  const all = [
+    ...prose.map(e => ({ ...e, type: 'prose' })),
+    ...poems.map(e => ({ ...e, type: 'poem'  })),
+  ];
+
+  all.sort((a, b) => {
+    if (a.pinned   !== b.pinned)   return Number(b.pinned)   - Number(a.pinned);
+    if (a.featured !== b.featured) return Number(b.featured) - Number(a.featured);
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  return all;
+}
+
+/* ─── FILTER ─────────────────────────────────────── */
+
+function applyFilters() {
+  const q = state.query;
+  state.filtered = state.all.filter(e => {
+    if (state.category !== 'all' && e.type !== state.category) return false;
+    if (q) {
+      const searchable = e.content || e.excerpt;
+      const hit =
+        e.title.toLowerCase().includes(q) ||
+        searchable.toLowerCase().includes(q) ||
+        e.tags.some(t => t.toLowerCase().includes(q));
+      if (!hit) return false;
+    }
+    return true;
+  });
+  renderList();
+}
+
+/* ─── RENDER LIST ────────────────────────────────── */
+
+/*
+  Asymmetric indent logic:
+  - Poems get a larger left indent (manuscript margin)
+  - Prose entries sit flush or with a small indent
+  - Pinned entries break indent rules slightly — they feel "pushed forward"
+  This creates visual rhythm without a card grid.
+*/
+function indentFor(entry, index) {
+  if (entry.pinned)        return '0ch';
+  if (entry.type === 'poem') return '3ch';
+  // Alternate prose between 0 and 1ch for slight unevenness
+  return index % 3 === 0 ? '1ch' : '0ch';
+}
+
+function renderList() {
+  const list    = $('#archiveList');
+  const counter = $('#resultCount');
+
+  if (!state.filtered.length) {
+    list.innerHTML = '<li class="empty-state">nothing found.</li>';
+    counter.textContent = '';
+    return;
+  }
+
+  const n = state.filtered.length;
+  counter.textContent = `${n} ${n === 1 ? 'piece' : 'pieces'}`;
+
+  list.innerHTML = state.filtered.map((e, i) => {
+    // Short excerpt for peek — first 90 chars, no newlines
+    const peekText = e.excerpt
+      .replace(/\n/g, ' ')
+      .slice(0, 90)
+      .trimEnd() + (e.excerpt.length > 90 ? '…' : '');
+
+    const classes = [
+      'entry-row',
+      e.pinned  ? 'is-pinned'  : '',
+      e.unsent  ? 'is-unsent'  : '',
+    ].filter(Boolean).join(' ');
+
+    return `
+      <li
+        class="${classes}"
+        data-id="${esc(e.id)}"
+        data-type="${e.type}"
+        style="--row-indent: ${indentFor(e, i)}"
+        tabindex="0"
+        role="listitem"
+        aria-label="${esc(e.title)}"
+      >
+        <span class="entry-date">${formatDate(e.date)}</span>
+        <span class="entry-title">${esc(e.title)}</span>
+        <span class="entry-type">${e.type}</span>
+        <span class="entry-peek">${esc(peekText)}</span>
+      </li>
+    `;
+  }).join('');
+
+  $$('.entry-row', list).forEach(row => {
+    const open = () => {
+      const entry = state.all.find(e => e.id === row.dataset.id);
+      if (entry) openModal(entry);
+    };
+    row.addEventListener('click', open);
+    row.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); open(); }
+    });
+  });
+}
+
+/* ─── MODAL ──────────────────────────────────────── */
+
+function openModal(entry) {
+  const backdrop = $('#modalBackdrop');
+  const body     = $('#modalBody');
+  const isPoem   = entry.type === 'poem';
+
+  const metaParts = [
+    `<span class="m-date">${fullDate(entry.date)}</span>`,
+    `<span class="m-type-meta">${entry.type}</span>`,
+    entry.pinned   ? `<span>★ pinned</span>`        : '',
+    entry.featured ? `<span>◈ featured</span>`      : '',
+    entry.unsent   ? `<span class="m-unsent">○ unsent</span>` : '',
+  ].filter(Boolean).join('');
+
+  const tagsHtml = entry.tags.length
+    ? `<div class="m-tags">
+         <span>tags —</span>
+         <span class="m-tags-inner">
+           ${entry.tags.map(t => `<span class="m-tag">${esc(t)}</span>`).join('')}
+         </span>
+       </div>`
+    : '';
+
+  body.innerHTML = `
+    <span class="m-type">${entry.type}</span>
+    <h2 class="m-title${isPoem ? ' is-poem' : ''}" id="modalTitle">${esc(entry.title)}</h2>
+    <div class="m-meta">${metaParts}</div>
+    <div class="m-content${isPoem ? ' is-poem' : ''}">${esc(entry.content || entry.excerpt)}</div>
+    ${tagsHtml}
+  `;
+
+  backdrop.setAttribute('aria-hidden', 'false');
+  backdrop.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+  $('#modalClose').focus();
+}
+
+function closeModal() {
+  const backdrop = $('#modalBackdrop');
+  backdrop.classList.remove('is-open');
+  backdrop.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+/* ─── EVENTS ─────────────────────────────────────── */
+
+function wireEvents() {
+  // Filter tabs
+  $$('.ftab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('.ftab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      state.category = btn.dataset.category;
+      applyFilters();
+    });
+  });
+
+  // Search
+  const inp   = $('#searchInput');
+  const clear = $('#searchClear');
+
+  inp.addEventListener('input', () => {
+    state.query  = inp.value.trim().toLowerCase();
+    clear.hidden = !state.query;
+    applyFilters();
+  });
+
+  clear.addEventListener('click', () => {
+    inp.value    = '';
+    state.query  = '';
+    clear.hidden = true;
+    inp.focus();
+    applyFilters();
+  });
+
+  // Modal
+  $('#modalClose').addEventListener('click', closeModal);
+  $('#modalBackdrop').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $('#modalBackdrop').classList.contains('is-open')) closeModal();
+  });
+}
+
+/* ─── INIT ───────────────────────────────────────── */
+
+async function init() {
+  const yr = $('#footerYear');
+  if (yr) yr.textContent = new Date().getFullYear();
+
+  wireEvents();
+
+  try {
+    state.all      = await loadData();
+    state.filtered = [...state.all];
+    renderList();
+  } catch (err) {
+    console.error('[UnSent]', err);
+    $('#archiveList').innerHTML = `<li class="empty-state">could not load archive. ${esc(err.message)}</li>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);

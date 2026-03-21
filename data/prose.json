@@ -1,90 +1,19 @@
 [
   {
-    "id": "prose-001",
-    "title": "On the Art of Stillness",
-    "date": "2024-01-15",
-    "excerpt": "There is a particular silence that exists between thoughts, a space where the mind rests before language arrives to describe it.",
-    "tags": ["meditation", "philosophy", "time"],
+    "id": "prose-009",
+    "title": "A Prelude to Us",
+    "date": "2026-03-20",
+    "excerpt": "Mistake or was an act. But I saw tears in those eyes. For me. Or I just convinced myself of so.",
+    "tags": [
+      "love",
+      "longing",
+      "memory",
+      "silence"
+    ],
     "pinned": true,
-    "featured": false,
-    "unsent": false,
-    "order": 1
-  },
-  {
-    "id": "prose-002",
-    "title": "Letters Never Sent",
-    "date": "2024-01-10",
-    "excerpt": "We write countless letters in our minds—words shaped by longing, shaped by distance, shaped by the knowledge that some things are better left unsaid.",
-    "tags": ["reflection", "memory", "connection"],
-    "pinned": false,
     "featured": true,
     "unsent": true,
-    "order": 2
-  },
-  {
-    "id": "prose-003",
-    "title": "The Texture of Ordinary Days",
-    "date": "2024-01-08",
-    "excerpt": "Beauty often hides in the mundane—in the way light falls across a room in the afternoon, in the rhythm of repetition, in the quiet persistence of small rituals.",
-    "tags": ["observation", "beauty", "daily"],
-    "pinned": false,
-    "featured": true,
-    "unsent": false,
-    "order": 3
-  },
-  {
-    "id": "prose-004",
-    "title": "Conversations with Absence",
-    "date": "2023-12-28",
-    "excerpt": "Sometimes we speak most honestly to those no longer here. The words flow without the weight of judgment, without the need for response.",
-    "tags": ["loss", "grief", "solitude"],
-    "pinned": false,
-    "featured": false,
-    "unsent": true,
-    "order": null
-  },
-  {
-    "id": "prose-005",
-    "title": "Reading Between Silence",
-    "date": "2023-12-15",
-    "excerpt": "A book is not just words on a page. It is a conversation across time, a reaching across the gap between minds, an act of profound intimacy.",
-    "tags": ["reading", "literature", "connection"],
-    "pinned": false,
-    "featured": false,
-    "unsent": false,
-    "order": null
-  },
-  {
-    "id": "prose-006",
-    "title": "Where Thoughts Begin",
-    "date": "2023-12-01",
-    "excerpt": "An idea doesn't arrive fully formed. It begins as a whisper, a half-glimpsed thing, something felt before it can be understood.",
-    "tags": ["creativity", "process", "philosophy"],
-    "pinned": false,
-    "featured": false,
-    "unsent": false,
-    "order": null
-  },
-  {
-    "id": "prose-007",
-    "title": "The Language of Light",
-    "date": "2023-11-18",
-    "excerpt": "If we learned to read light as carefully as we read words, we would understand so much more about the world and ourselves.",
-    "tags": ["observation", "nature", "perception"],
-    "pinned": false,
-    "featured": false,
-    "unsent": false,
-    "order": null
-  },
-  {
-    "id": "prose-008",
-    "title": "Collected Moments",
-    "date": "2023-11-05",
-    "excerpt": "Life is made of moments—most small, some luminous, all fleeting. We collect them like shells on a beach, trying to preserve something indefinable.",
-    "tags": ["time", "memory", "impermanence"],
-    "pinned": false,
-    "featured": false,
-    "unsent": false,
-    "order": null
+    "order": null,
+    "content": "Mistake or was an act.\n\nBut I saw tears in those eyes.\n\nFor me. Or I just convinced myself of so.\n\nIt had to be for me. Because, I saw none near her. With us.\n\nTime started to lose its shape, lost in the silence. The ticking of clock and the whirling of the fan became ache to our hearts. Nothing dared to move, nothing was conveyed, yet something passed between us, something stayed with us.\n\nMaybe the imagination of those hearts who longed for each other or the mind that feared the passing of those cherished and priceless memories. The air hung heavy, as though the conclusion of feeling were imminent. Imminent? A goodbye, choked as we prepared to part. We wished our paths to meet again. But the abyss I am drowning in whispers otherwise, it’s better for our paths not to cross again.\n\nBut I saw it, in her eyes.\n\nThose dark, moist eyes said a thousand things that I never learned to read. How could a man who had never loved recognize the language of a silent lover? I was the clown who never understood what was so desperate in those expressions, in those moments. When the feelings were unbearable and tears clouded my eyes, I left and she just sat there. Perhaps resenting herself for giving her heart to someone who never cared for it, someone who never understood that longing.\n\nNever understood? How could I?\n\nI recognized the pearls that were my life before. It’s just that I do not want to break another heart that I wished was mine. So, I kept smiling. Innocent. Convincing. A performance she never questioned.\n\nHave I not lost enough?\n\nWould I dare again to love?"
   }
 ]
